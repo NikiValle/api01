@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD JSON</title>
+</head>
+<body>
+
+<h2>Inserisci nuovo record</h2>
+<input type="text" id="nome" placeholder="Nome">
+<input type="number" id="valore" placeholder="Valore">
+<button onclick="crea()">Crea</button>
+
+<h2>Elenco dati</h2>
+<button onclick="carica()">Carica Dati</button>
+<ul id="lista"></ul>
+
+<script>
+const API = "api.php";
+
+// ================= CREATE =================
+function crea(){
+    fetch(API, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            nome: document.getElementById("nome").value,
+            valore: document.getElementById("valore").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("Creato ID: " + data.id);
+        carica();
+    });
+}
+
+// ================= READ =================
+function carica(){
+    fetch(API)
+    .then(res => res.json())
+    .then(data => {
+        let lista = document.getElementById("lista");
+        lista.innerHTML = "";
+        data.forEach(item => {
+            lista.innerHTML += `
+                <li>
+                    ${item.id} - ${item.nome} - ${item.valore}
+                    <button onclick="elimina(${item.id})">Elimina</button>
+                </li>
+            `;
+        });
+    });
+}
+
+// ================= DELETE =================
+function elimina(id){
+    fetch(API + "?id=" + id, {
+        method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(() => carica());
+}
+</script>
+
+</body>
+</html>
