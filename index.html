@@ -14,23 +14,31 @@
 <h2>Elenco dati</h2>
 <button onclick="carica()">Carica Dati</button>
 <ul id="lista"></ul>
+
 <script>
 const API = "api.php";
 
 // ================= CREATE =================
 function crea(){
+    const nome = document.getElementById("nome").value.trim();
+    const valore = document.getElementById("valore").value;
+
+    if(nome === "" || valore === ""){
+        alert("Compila tutti i campi!");
+        return;
+    }
+
     fetch(API, {
         method: "POST",
         headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({
-            nome: document.getElementById("nome").value,
-            valore: document.getElementById("valore").value
-        })
+        body: JSON.stringify({ nome, valore })
     })
     .then(res => res.json())
     .then(data => {
         alert("Creato ID: " + data.id);
         carica();
+        document.getElementById("nome").value = "";
+        document.getElementById("valore").value = "";
     });
 }
 
@@ -52,19 +60,23 @@ function carica(){
         });
     });
 }
+
+// Carica subito la lista all'apertura della pagina
 carica();
+
 // ================= DELETE =================
 function elimina(id){
+    if(!confirm("Sei sicuro di voler eliminare questo record?")) return;
+
     fetch(API + "?id=" + id, {
         method: "DELETE"
     })
     .then(res => res.json())
     .then(() => carica());
 }
+
 // ================= UPDATE =================
 function modifica(id){
-
-    // Chiedo i nuovi valori
     let nuovoNome = prompt("Nuovo nome:");
     let nuovoValore = prompt("Nuovo valore:");
 
@@ -87,5 +99,6 @@ function modifica(id){
     });
 }
 </script>
+
 </body>
 </html>
