@@ -14,7 +14,6 @@
 <h2>Elenco dati</h2>
 <button onclick="carica()">Carica Dati</button>
 <ul id="lista"></ul>
-
 <script>
 const API = "api.php";
 
@@ -46,13 +45,14 @@ function carica(){
             lista.innerHTML += `
                 <li>
                     ${item.id} - ${item.nome} - ${item.valore}
+                    <button onclick="modifica(${item.id})">Modifica</button>
                     <button onclick="elimina(${item.id})">Elimina</button>
                 </li>
             `;
         });
     });
 }
-
+carica();
 // ================= DELETE =================
 function elimina(id){
     fetch(API + "?id=" + id, {
@@ -61,7 +61,31 @@ function elimina(id){
     .then(res => res.json())
     .then(() => carica());
 }
-</script>
+// ================= UPDATE =================
+function modifica(id){
 
+    // Chiedo i nuovi valori
+    let nuovoNome = prompt("Nuovo nome:");
+    let nuovoValore = prompt("Nuovo valore:");
+
+    if(nuovoNome === null || nuovoValore === null){
+        return; // annulla se premi cancel
+    }
+
+    fetch(API + "?id=" + id, {
+        method: "PUT",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+            nome: nuovoNome,
+            valore: nuovoValore
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("Record aggiornato!");
+        carica();
+    });
+}
+</script>
 </body>
 </html>
